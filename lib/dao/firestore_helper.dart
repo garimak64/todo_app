@@ -6,7 +6,7 @@ class FireStoreHelper {
   
   static void createRecord(String title, List<Task> tasks) async{
     List<Map> steps = tasks.map((task) => task.toMap()).toList();
-    await _databaseReference.collection("notes")
+    await _databaseReference.collection('notes')
         .add({
       'title': title,
       'tasks': steps,
@@ -16,14 +16,18 @@ class FireStoreHelper {
 
   static void updateRecord(String title, List<Task> tasks, String documentID) async {
     List<Map> steps = tasks.map((task) => task.toMap()).toList();
-    await _databaseReference.collection("notes").doc(documentID).update({
+    await _databaseReference.collection('notes').doc(documentID).update({
       'title': title,
       'tasks': steps,
     });
   }
 
   static void deleteRecord(String documentID) async {
-    await _databaseReference.collection("notes").doc(documentID).delete();
+    await _databaseReference.collection('notes').doc(documentID).delete();
+  }
+
+  static Stream<QuerySnapshot> getAllRecords() {
+    return _databaseReference.collection('notes').snapshots();
   }
  
 }

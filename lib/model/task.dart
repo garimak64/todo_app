@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class Task {
   bool _isTaskCompleted;
   String _taskDetails;
-  Key key;
 
 
   Task(taskDetails, isTaskCompleted){
     this._isTaskCompleted = isTaskCompleted;
     this._taskDetails = taskDetails;
-    this.key;
   }
 
 
@@ -19,7 +17,7 @@ class Task {
     _isTaskCompleted = val;
   }
 
-  void set taskDetails(String val) {
+  set taskDetails(String val) {
     this._taskDetails = val;
   }
 

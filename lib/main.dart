@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/dao/firestore_helper.dart';
 import 'package:todoapp/model/task.dart';
-import 'package:todoapp/screen/second_screen.dart';
+import 'package:todoapp/screen/todo_screen.dart';
 import 'package:todoapp/state/current_tasks.dart';
-import 'package:todoapp/widget/main_screen_list.dart';
+import 'package:todoapp/widget/notes_list_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,14 +20,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => CurrentTasks(),
-          child: MaterialApp(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          primaryColor: Colors.teal,
+          primaryColor: Color.fromRGBO(58, 66, 86, 1.0),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: MyHomePage(title: 'Todo App'),
+        home: MyHomePage(title: 'TO-DO'),
       ),
     );
   }
@@ -42,48 +44,50 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String id;
-  final db = FirebaseFirestore.instance;
-
   @override
   Widget build(BuildContext context) {
     CurrentTasks currentTasks = Provider.of<CurrentTasks>(context);
     return Scaffold(
-    appBar: AppBar(
-      // Here we take the value from the MyHomePage object that was created by
-      // the App.build method, and use it to set our appbar title.
-      title: Text(widget.title),
-    ),
-    body: Center(
-        child: StreamBuilder<QuerySnapshot>(
-            stream: db.collection('notes').snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final QuerySnapshot data = snapshot.data;
-                return NotesList(data: data, currentTasks: currentTasks);
-              } else {
-                return Text('You\'re so clean... :)');
-              }
-            })),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        currentTasks.setCurrentTasks([Task('', false)]);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SecondRoute()),
-        );
-      },
-      tooltip: 'Increment',
-      child: Icon(Icons.add),
-    ), // This trailing comma makes auto-formatting nicer for build methods.
-      );
+      backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
+      appBar: AppBar(
+        elevation: 25.0,
+        title: Text(widget.title),
+      ),
+      body: Center(
+          child: StreamBuilder<QuerySnapshot>(
+              stream: FireStoreHelper.getAllRecords(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final QuerySnapshot data = snapshot.data;
+                  if (data.size == 0) {
+                    return Text(
+                      'Create a new task.. :)',
+                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    );
+                  }
+                  return NotesList(data: data, currentTasks: currentTasks);
+                } else if (snapshot.hasError) {
+                  return Text(
+                    'ERROR...',
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              })),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        elevation: 50.0,
+        onPressed: () {
+          currentTasks.setCurrentTasks([Task('', false)]);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TodoScreen()),
+          );
+        },
+        child:
+            Icon(Icons.edit, size: 35.0, color: Color.fromRGBO(64, 75, 96, .9)),
+      ),
+    );
   }
-
-  void _readData() async {
-    DocumentSnapshot snapshot = await db.collection('notes').doc(id).get();
-    print(snapshot.data()['title']);
-  }
-
-
-
 }
