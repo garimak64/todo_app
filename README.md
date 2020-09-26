@@ -4,4 +4,4 @@ A new Flutter application.
 
 ## Getting Started
 
-This is demo project for create and complete tasks.
+This is demo project to create and complete tasks.
