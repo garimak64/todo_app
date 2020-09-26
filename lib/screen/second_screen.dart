@@ -9,7 +9,8 @@ class SecondRoute extends StatefulWidget {
   final String title;
   final String documentID;
 
-  const SecondRoute({Key key, this.title, this.documentID}) : super(key: key);
+  const SecondRoute({Key key, this.title, this.documentID})
+      : super(key: key);
 
   @override
   _SecondRouteState createState() => _SecondRouteState();
@@ -41,49 +42,25 @@ class _SecondRouteState extends State<SecondRoute> {
                     Navigator.pop(context);
                   }),
             ],
-            title: Text("TO-DO"),
-          ),
-          body: Column(
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 10.0, top: 20, right: 10),
-                  child: TextFormField(
-                    controller: titleCtrl,
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "Title..",
-
-                    ),
-                  ),
-                ),
+            title: TextField(
+              controller: titleCtrl,
+              decoration: InputDecoration(
+                hintText: "Title..",
               ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 360,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only( top: 20, right: 5),
-                  child: ReorderableListView(
-                    onReorder: currentTasks.reOrder,
-
-                      children: tasks.map((element) => TaskRow(
-                          task: element, key: ValueKey(element))).toList(),
-                ),
-              ),),
-            ],
-          )),
+            ),
+          ),
+          body: ReorderableListView(
+              onReorder: currentTasks.reOrder,
+              children: tasks
+                  .map((e) => TaskRow(task: e, key: ValueKey(e)))
+                  .toList())),
     );
   }
 
-  Future<bool> _onWillPop(CurrentTasks tasks) {
-    if (titleCtrl.text != null && titleCtrl.text.isEmpty) {
-      titleCtrl.text = 'No title';
+  Future<bool> _onWillPop(CurrentTasks tasks) async {
+
+    if(titleCtrl.text != null && titleCtrl.text.isEmpty) {
+      titleCtrl.text = 'No Title';
     }
     if (widget.documentID == null) {
       FireStoreHelper.createRecord(titleCtrl.text, tasks.getTasks());
@@ -92,7 +69,6 @@ class _SecondRouteState extends State<SecondRoute> {
           titleCtrl.text, tasks.getTasks(), widget.documentID);
     }
     tasks.clear();
-
     return Future.value(true);
   }
 

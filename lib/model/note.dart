@@ -1,4 +1,3 @@
-
 import 'package:todoapp/model/task.dart';
 
 class Note {
